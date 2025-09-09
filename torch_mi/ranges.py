@@ -43,15 +43,13 @@ class PercentileShiftRange:
             x (torch.Tensor): The input tensor (B,N).
 
         Returns:
-            Tuple[torch.Tensor]: A tensors' tuple ((B,1), (B,1)) containing the lower and upper    
+            Tuple[torch.Tensor]: A tensors' tuple ((B,1), (B,1)) containing the lower and upper
             bounds of the range.
 
         """
         lowerB, upperB = x.quantile(
-            torch.tensor(
-                [self.percentile, 1 - self.percentile]
-            ),
+            torch.tensor([self.percentile, 1 - self.percentile], device=x.device),
             dim=1,
-            keepdim=True
+            keepdim=True,
         )
         return lowerB - self.gain * lowerB.abs(), upperB + self.gain * upperB.abs()

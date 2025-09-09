@@ -58,7 +58,7 @@ class MutualInformationDensityBased(ABC, torch.nn.Module):
     def _batchedLinspace(self, x, nBins):
         # X : (B,N) -> (B, nBins)
         minV, maxV = self.range.computeRange(x)
-        return torch.arange(nBins) * (maxV - minV) / (nBins - 1) + minV
+        return torch.arange(nBins, device=x.device) * (maxV - minV) / (nBins - 1) + minV
 
     @abstractmethod
     def computePxy(self, x, y):
