@@ -4,6 +4,7 @@ from typing import Literal
 import torch
 from .ranges import PercentileShiftRange
 
+logger = logging.getLogger(__name__)
 
 class MutualInformationDensityBased(ABC, torch.nn.Module):
     """
@@ -119,13 +120,13 @@ class MutualInformationDensityBased(ABC, torch.nn.Module):
         """
 
         if torch.any(Pxy <= 0):
-            logging.warning(f"Pxy contained non-positive values. Clamping with min={eps}")
+            logger.debug(f"Pxy contained non-positive values. Clamping with min={eps}")
             Pxy = torch.clamp(Pxy, min=eps)
         if torch.any(Px <= 0):
-            logging.warning(f"Px contained non-positive values. Clamping with min={eps}")
+            logger.debug(f"Px contained non-positive values. Clamping with min={eps}")
             Px = torch.clamp(Px, min=eps)
         if torch.any(Py <= 0):
-            logging.warning(f"Py contained non-positive values. Clamping with min={eps}")
+            logger.debug(f"Py contained non-positive values. Clamping with min={eps}")
             Py = torch.clamp(Py, min=eps)
 
         PxPy = Px * Py
