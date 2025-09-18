@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import logging
 from typing import Literal
 import torch
 from .ranges import PercentileShiftRange
@@ -103,7 +104,7 @@ class MutualInformationDensityBased(ABC, torch.nn.Module):
         )
 
     @torch.compile
-    def computeKlDivMI(self, Pxy, Px, Py):
+    def computeKlDivMI(self, Pxy, Px, Py, eps=1e-10):
         """
         Computes the mutual information using Kullback-Leibler divergence.
 
@@ -117,7 +118,18 @@ class MutualInformationDensityBased(ABC, torch.nn.Module):
 
         """
 
+        if torch.any(Pxy <= 0):
+            logging.warning(f"Pxy contained non-positive values. Clamping with min={eps}")
+            Pxy = torch.clamp(Pxy, min=eps)
+        if torch.any(Px <= 0):
+            logging.warning(f"Px contained non-positive values. Clamping with min={eps}")
+            Px = torch.clamp(Px, min=eps)
+        if torch.any(Py <= 0):
+            logging.warning(f"Py contained non-positive values. Clamping with min={eps}")
+            Py = torch.clamp(Py, min=eps)
+
         PxPy = Px * Py
+
         return (
             torch.nn.functional.kl_div(
                 PxPy.log(),

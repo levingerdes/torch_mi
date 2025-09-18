@@ -91,7 +91,7 @@ class BinsCountMutualInformation(MutualInformationDensityBased):
             ).sum(dim=1)
         )[:, :-1, :-1]
 
-    def normalize(self, x, dim):
+    def normalize(self, x, dim, eps=1e-10):
         """
         Normalizes the input tensor along the specified dimension.
 
@@ -103,7 +103,7 @@ class BinsCountMutualInformation(MutualInformationDensityBased):
             torch.Tensor: The normalized tensor.
 
         """
-        return x / x.sum(dim=dim, keepdim=True)
+        return x / torch.clamp(x.sum(dim=dim, keepdim=True), min=eps)
 
     def computePxy(self, x, y):
         """
